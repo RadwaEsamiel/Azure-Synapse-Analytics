@@ -1,0 +1,20 @@
+{
+	"name": "Staging_DedicatedSQLPool_tripdata",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/nyctaxi_Datawarehouse"
+		},
+		"content": {
+			"query": "\ncreate SCHEMA staging go\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'Parquet_file_Format') \n\tCREATE EXTERNAL FILE FORMAT [Parquet_file_Format] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'nyc-taxi-data_DedicatedSQLPool') \n\tCREATE EXTERNAL DATA SOURCE [nyc-taxi-data_DedicatedSQLPool] \n\tWITH (\n\t\tLOCATION = 'abfss://nyc-taxi-data@dlsrsynapsecourse.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE staging.etx_trip_data_agg (\n\t[PULocationID] int,\n\t[DOLocationID] int,\n\t[total_trip_count] bigint,\n\t[total_fare_amount] float\n\t)\n\tWITH (\n\tLOCATION = 'gold_layer/trip_data_green_agg/**',\n\tDATA_SOURCE = [nyc-taxi-data_DedicatedSQLPool],\n\tFILE_FORMAT = [Parquet_file_Format]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM staging.etx_trip_data_agg\nGO\n\n\nCREATE EXTERNAL TABLE staging.tripdata (\n\t[year] nvarchar(4000),\n\t[month] nvarchar(4000),\n\t[trip_date] date,\n\t[Borough] nvarchar(4000),\n\t[trip_day] nvarchar(4000),\n\t[weekend_ind] nvarchar(4000),\n\t[card_trips_count] int,\n\t[cash_trips_count] int,\n\t[count_Dispatch_trips] int,\n\t[count_Street_hail_trips] int,\n\t[total_trip_distance] float,\n\t[total_fare_amount] float,\n\t[total_duration] int\n\t)\n\tWITH (\n\tLOCATION = 'gold_layer/final_reporting_data',\n\tDATA_SOURCE = [nyc-taxi-data_DedicatedSQLPool],\n\tFILE_FORMAT = [Parquet_file_Format]\n\t)\nGO\n\nSELECT TOP 100 * FROM staging.tripdata\nGO\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_DWH",
+				"poolName": "nyc_taxi_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

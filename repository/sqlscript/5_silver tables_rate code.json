@@ -1,0 +1,20 @@
+{
+	"name": "5_silver tables_rate code",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\nif OBJECT_id('silver.rate_code') is not null \n    drop EXTERNAL table silver.rate_code go\n\n\nCREATE EXTERNAL TABLE silver.rate_code \n    with(\n        LOCATION = 'silver_layer/rate_code',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file\n    )as \n\n    select rate_code_id,rate_code from \n    OPENROWSET(\n        BULK 'raw/rate_code.json',\n        DATA_SOURCE = 'logical_DWH_exDS' ,\n        format = 'csv' ,\n        FIELDQUOTE = '0x0b',\n        FIELDTERMINATOR = '0x0b',\n        ROWTERMINATOR = '0x0b'\n    )with(\n        jsonread NVARCHAR(MAX)\n    )as result_set \n    CROSS APPLY openjson(jsonread) with(\n        rate_code_id SMALLINT,\n        rate_code VARCHAR(30)\n   )go\n\n\n   select * from silver.rate_code go ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

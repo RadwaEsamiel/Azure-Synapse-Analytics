@@ -1,0 +1,65 @@
+{
+	"name": "silver_taxi_zone_usp_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Delete_existent_file",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 3000,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_silverlayer_taxizone",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "create_taxizone_usp",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Delete_existent_file",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[silver].[usp_taxi_zones]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_serverless_sqlpool",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "testing"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-09-30T15:52:05Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

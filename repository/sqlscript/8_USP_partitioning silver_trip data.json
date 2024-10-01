@@ -1,0 +1,20 @@
+{
+	"name": "8_USP_partitioning silver_trip data",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi;\nGO\n\nCREATE OR ALTER PROCEDURE silver.partitioning_trip_data\n    @year VARCHAR(5),\n    @month VARCHAR(3)\nAS\nBEGIN\n    DECLARE @create_statement NVARCHAR(MAX),\n            @drop_statement NVARCHAR(MAX);\n\n    -- Drop statement to remove the existing partition table if it exists\n    SET @drop_statement = 'IF OBJECT_ID(''silver.part_trip_data_' + @year + '_' + @month + ''') IS NOT NULL ' +\n                          'DROP EXTERNAL TABLE silver.part_trip_data_' + @year + '_' + @month + ';';\n\n    PRINT(@drop_statement)\n    EXEC sp_executesql @drop_statement;\n\n    -- Create statement to create the new partition table\n    SET @create_statement = \n        'CREATE EXTERNAL TABLE silver.part_trip_data_' + @year + '_' + @month + ' ' +\n        'WITH ( ' +\n        '    LOCATION = ''silver_layer/partitioning_trip_data/year=' + @year + '/month=' + @month + ''', ' +\n        '    DATA_SOURCE = logical_DWH_exDS, ' +\n        '    FILE_FORMAT = parquert_file ' +\n        ') AS ' +\n        'SELECT VendorID ,\n        lpep_pickup_datetime ,\n        lpep_dropoff_datetime ,\n        store_and_fwd_flag ,\n        RatecodeID ,\n        PULocationID ,\n        DOLocationID ,\n        passenger_count ,\n        trip_distance ,\n        fare_amount ,\n        extra ,\n        mta_tax ,\n        tip_amount ,\n        tolls_amount ,\n        ehail_fee ,\n        improvement_surcharge ,\n        total_amount ,\n        payment_type ,\n        trip_type ,\n        congestion_surcharge \n         FROM bronze.view_partition_tripdata ' +\n        'WHERE year = ''' + @year + ''' ' +\n        'AND month = ''' + @month + ''';';\n\n\n    PRINT(@create_statement)\n    EXEC sp_executesql @create_statement;\nEND;\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

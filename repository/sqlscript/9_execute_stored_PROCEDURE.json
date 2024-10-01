@@ -1,0 +1,20 @@
+{
+	"name": "9_execute_stored_PROCEDURE",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi;\n\nEXEC silver.partitioning_trip_data '2020' , '01' \n\nEXEC silver.partitioning_trip_data '2020', '02'\nEXEC silver.partitioning_trip_data '2020', '03'\nEXEC silver.partitioning_trip_data '2020', '04'\nEXEC silver.partitioning_trip_data '2020', '05'\nEXEC silver.partitioning_trip_data '2020', '06'\nEXEC silver.partitioning_trip_data '2020', '07'\nEXEC silver.partitioning_trip_data '2020', '08'\nEXEC silver.partitioning_trip_data '2020', '09'\nEXEC silver.partitioning_trip_data '2020', '10'\nEXEC silver.partitioning_trip_data '2020', '11'\nEXEC silver.partitioning_trip_data '2020', '12'\nEXEC silver.partitioning_trip_data '2021', '01'\nEXEC silver.partitioning_trip_data '2021', '02'\nEXEC silver.partitioning_trip_data '2021', '03'\nEXEC silver.partitioning_trip_data '2021', '04'\nEXEC silver.partitioning_trip_data '2021', '05'\nEXEC silver.partitioning_trip_data '2021', '06' ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

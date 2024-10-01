@@ -1,0 +1,20 @@
+{
+	"name": "5_3_views_partition",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze views"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\ndrop view if EXISTS bronze.view_partition_tripdata go \n\ncreate view bronze.view_partition_tripdata as \nselect  result_set.filepath(1) as year, result_set.filepath(2) as month ,result_set.* \n\nfrom OPENROWSET(\n    bulk 'raw/trip_data_green_csv/year=*/month=*/*.csv',\n    data_source = 'logical_DWH_exDS',\n    format = 'csv',\n    HEADER_ROW = true,\n    PARSER_VERSION = '2.0'\n)with(VendorID INT,\n        lpep_pickup_datetime datetime2(7),\n        lpep_dropoff_datetime datetime2(7),\n        store_and_fwd_flag CHAR(1),\n        RatecodeID INT,\n        PULocationID INT,\n        DOLocationID INT,\n        passenger_count INT,\n        trip_distance FLOAT,\n        fare_amount FLOAT,\n        extra FLOAT,\n        mta_tax FLOAT,\n        tip_amount FLOAT,\n        tolls_amount FLOAT,\n        ehail_fee INT,\n        improvement_surcharge FLOAT,\n        total_amount FLOAT,\n        payment_type INT,\n        trip_type INT,\n        congestion_surcharge FLOAT)\nas result_set go \n\nselect * from bronze.view_partition_tripdata where year = '2021' and month = '07' go",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

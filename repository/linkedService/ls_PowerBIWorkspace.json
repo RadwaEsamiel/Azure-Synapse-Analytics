@@ -1,0 +1,12 @@
+{
+	"name": "ls_PowerBIWorkspace",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "PowerBIWorkspace",
+		"typeProperties": {
+			"workspaceID": "4f8e5414-b0fb-4748-9bbe-6d80a55f6fdb",
+			"tenantID": "c419ba9b-c659-4fd9-8824-f975107b2376"
+		}
+	}
+}

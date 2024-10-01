@@ -1,0 +1,20 @@
+{
+	"name": "2_External_datasource",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\ncreate EXTERNAL DATA SOURCE logical_DWH_exDS\nwith (\n    location = 'https://dlsrsynapsecourse.dfs.core.windows.net/nyc-taxi-data'\n\n\n);\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "7_silver tables_trip data csv",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\nif OBJECT_id('silver.trip_data_green') is not null \n    drop EXTERNAL table silver.trip_data_green go\n\n\nCREATE EXTERNAL TABLE silver.trip_data_green \n    with(\n        LOCATION = 'silver_layer/trip_data_green',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file\n    )as \n    select * from bronze.trip_data_csv go \n\nselect * from silver.trip_data_green go",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "CTE_Analysis",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Data quality"
+		},
+		"content": {
+			"query": "with trips_data as (select * from OPENROWSET(\n        bulk 'raw/trip_data_green_delta',\n        DATA_SOURCE = 'nyc_taxi_data',\n        format = 'Delta') as delta_trips_data ), zones_data as(select * from OPENROWSET(\n        bulk 'raw/taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data',\n        format = 'csv',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE) as csv_zonesdata ), paymenttype_data as(select payment_type, payment_type_desc from \n    OPENROWSET(\n        bulk 'raw/payment_type.json',\n         DATA_SOURCE = 'nyc_taxi_data',\n        format = 'csv',\n        FIELDTERMINATOR = '0x0b',\n        FIELDQUOTE = '0x0b'\n\n    )with(\n        jsondata NVARCHAR(MAX)\n    ) \n    as json_paymenttype_data\n    CROSS APPLY openjson(jsondata) with (payment_type SMALLINT , payment_type_desc VARCHAR(15)))\n\nselect \nzones_data.Borough, count(*) as total_trip,\nCOUNT(CASE when paymenttype_data.payment_type_desc = 'Credit card' then trips_data.VendorID end) as card_trips,\nCOUNT(CASE when paymenttype_data.payment_type_desc = 'cash' then trips_data.VendorID end) as cash_trips,\ncast((sum(CASE when paymenttype_data.payment_type_desc = 'cash' then 1 else 0 end)/\ncast(count(trips_data.VendorID)as decimal))\n*100 as decimal(5,2))as cash_trips_percentage,\ncast((sum(CASE when paymenttype_data.payment_type_desc = 'Credit card' then 1 else 0 end)/\ncast(count(trips_data.VendorID)as decimal))\n*100 as decimal(5,2))as card_trips_percentage\n\nfrom trips_data \nleft join zones_data on trips_data.PULocationID = zones_data.LocationID \nleft join paymenttype_data on trips_data.payment_type = paymenttype_data.payment_type \n\ngroup by zones_data.Borough \norder by count(*);\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

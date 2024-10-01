@@ -1,0 +1,20 @@
+{
+	"name": "1_1_gold reporting_fulltable",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/3_Gold_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi go \n\nselect\n    vtrip.year, vtrip.month, \n    convert(date,vtrip.lpep_pickup_datetime) as trip_date,\n    tz.Borough,\n    cl.day_name as trip_day,\n    (case when cl.day_name in ('Saturday', 'Sunday') then 'Y' else 'N' end ) as weekend_ind,\n    sum(case when pt.payment_type_desc = 'Credit card' then 1 else 0 end) as card_trips_count,\n    sum(case when pt.payment_type_desc = 'Cash' then 1 else 0 end) as cash_trips_count\n\n from \n    silver.view_partitioning_trip_data vtrip \n    join silver.taxi_zones tz on vtrip.PULocationID = tz.LocationID \n    join silver.calendar cl on convert(date,vtrip.lpep_pickup_datetime) = cl.date\n    join silver.payment_type pt on vtrip.payment_type = pt.payment_type\n    \nwhere vtrip.year = '2021' and  vtrip.month = '07' \n\ngroup by  \n    vtrip.year, vtrip.month, \n    convert(date,vtrip.lpep_pickup_datetime),\n    tz.Borough,\n    cl.day_name\n    \n    go ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

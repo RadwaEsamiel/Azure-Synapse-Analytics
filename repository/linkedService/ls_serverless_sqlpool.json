@@ -1,0 +1,19 @@
+{
+	"name": "ls_serverless_sqlpool",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDW",
+		"typeProperties": {
+			"server": "tcp:synapsecourseworkspace-ondemand.sql.azuresynapse.net,1433",
+			"database": "logical_DWH_nyc_taxi",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SystemAssignedManagedIdentity"
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

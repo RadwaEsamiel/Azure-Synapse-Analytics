@@ -1,0 +1,20 @@
+{
+	"name": "5_1_bronze_views_rate_code",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze views"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\ndrop view if EXISTS bronze.view_rate_code go\ncreate view bronze.view_rate_code\nas \nselect rate_code_id,rate_code from \n    OPENROWSET(\n        BULK 'raw/rate_code.json',\n        DATA_SOURCE = 'logical_DWH_exDS',\n        FORMAT = 'csv',\n        FIELDQUOTE = '0x0b',\n        FIELDTERMINATOR = '0x0b',\n        ROWTERMINATOR = '0x0b'\n    )with(\n        jasonresultread NVARCHAR(MAX)\n    )\n    as json_result_set\n    CROSS APPLY openjson(jasonresultread) with(\n        rate_code_id SMALLINT,\n        rate_code VARCHAR(30)\n    )go\n\nselect * from bronze.view_rate_code go \n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

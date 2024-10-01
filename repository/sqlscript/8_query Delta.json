@@ -1,0 +1,20 @@
+{
+	"name": "8_query Delta",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/discovery"
+		},
+		"content": {
+			"query": "USE nyc_taxi_projectDB;\n\nselect top 100 *\n    from OPENROWSET(\n        BULK 'raw/trip_data_green_delta/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'Delta'\n\n    )as result_set\n\n*******************************************************************************************************************************\n\nselect top 100 *\n    from OPENROWSET(\n        BULK 'raw/trip_data_green_delta/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'Delta'\n\n    )with (\n    store_and_fwd_flag char(1) ,\n    VendorID int,\n    lpep_pickup_datetime datetime2(7),\n    lpep_dropoff_datetime datetime2(7),\n    total_amount FLOAT,\n    payment_type INT,\n    trip_type INT,\n    year VARCHAR(5),\n    month VARCHAR(3)\n        ) \nas result_set\n\n*******************************************************************************************************************************\n\nselect top 100 *\n    from OPENROWSET(\n        BULK 'raw/trip_data_green_delta/',\n        DATA_SOURCE = 'nyc_taxi_data', FORMAT = 'Delta'\n    )with (\n    store_and_fwd_flag char(1) ,VendorID int,lpep_pickup_datetime datetime2(7),lpep_dropoff_datetime datetime2(7),\n    total_amount FLOAT,payment_type INT,trip_type INT,\n    year VARCHAR(5),\n    month VARCHAR(3) ) as result_set\n        where year = '2020' and month = '07';\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

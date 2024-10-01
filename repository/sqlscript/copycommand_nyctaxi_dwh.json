@@ -1,0 +1,20 @@
+{
+	"name": "copycommand_nyctaxi_dwh",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/nyctaxi_Datawarehouse"
+		},
+		"content": {
+			"query": "create schema copydwh go\n\nIF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'nyc_taxi_reporting' AND O.TYPE = 'U' AND S.NAME = 'copydwh')\nCREATE TABLE copydwh.nyc_taxi_reporting\n\t(\n\t [PULocationID] int,\n\t [DOLocationID] int,\n\t [total_trip_count] bigint,\n\t [total_fare_amount] float\n\t)\nWITH\n\t(\n\tDISTRIBUTION = ROUND_ROBIN,\n\t CLUSTERED COLUMNSTORE INDEX\n\t)\nGO\n\nCOPY INTO copydwh.nyc_taxi_reporting\n(PULocationID 1, DOLocationID 2, total_trip_count 3, total_fare_amount 4)\nFROM 'https://dlsrsynapsecourse.dfs.core.windows.net/nyc-taxi-data/gold_layer/trip_data_green_agg'\nWITH\n(\n\tFILE_TYPE = 'PARQUET'\n\t,MAXERRORS = 0\n\t,COMPRESSION = 'snappy'\n\t,auto_create_table = 'ON'\n)\n--END\nGO\n\nSELECT TOP 100 * FROM copydwh.nyc_taxi_reporting\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_DWH",
+				"poolName": "nyc_taxi_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

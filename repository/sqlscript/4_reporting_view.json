@@ -1,0 +1,20 @@
+{
+	"name": "4_reporting_view",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/3_Gold_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi go \n\ndrop VIEW if EXISTS gold.reporting_view go \n\ncreate view gold.reporting_view as \n\nSELECT [year]\n,[month]\n,[trip_date]\n,[Borough]\n,[trip_day]\n,[weekend_ind]\n,[card_trips_count]\n,[cash_trips_count]\n,[count_Dispatch_trips]\n,[count_Street_hail_trips]\n,[total_trip_distance]\n,[total_fare_amount]\n,[total_duration]\n\n FROM OPENROWSET (\n    BULK 'gold_layer/final_reporting_data/**',\n    DATA_SOURCE = 'logical_DWH_exDS',\n    FORMAT = 'parquet' \n ) with (\n   [year] VARCHAR(5)\n,[month] VARCHAR(3)\n,[trip_date] DATE\n,[Borough] VARCHAR(15)\n,[trip_day] VARCHAR(15)\n,[weekend_ind] CHAR(1)\n,[card_trips_count] INT\n,[cash_trips_count] INT\n,[count_Dispatch_trips] INT\n,[count_Street_hail_trips] INT\n,[total_trip_distance] FLOAT\n,[total_fare_amount] FLOAT\n,[total_duration] INT\n )\n \n as reult_set go\n\n select * from gold.reporting_view go \n    \n \n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

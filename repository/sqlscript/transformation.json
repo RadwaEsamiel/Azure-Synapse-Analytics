@@ -1,0 +1,20 @@
+{
+	"name": "transformation",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Data quality"
+		},
+		"content": {
+			"query": "USE nyc_taxi_projectDB;\n\n\nSELECT\n    lpep_pickup_datetime, lpep_dropoff_datetime,\n    DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime) as trip_duration,\n    DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60 as one_hour,\n    (DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60) + 1 as over_one\nFROM\n    OPENROWSET(\n         BULK 'raw/trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'PARQUET'\n    )  as result_set\n\n\n\n______________________________________________________________________________________________________________\n\nSELECT\ncount(*) trips_count,\n    DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60 as trip_duration_by_hours_from ,\n    (DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60) + 1 as trip_duration_by_hours_to\nFROM\n    OPENROWSET(\n         BULK 'raw/trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'PARQUET'\n    )  as result_set\n\ngroup by DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60 , \n(DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60) + 1\norder by DATEDIFF(minute,lpep_pickup_datetime, lpep_dropoff_datetime)/60 ;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

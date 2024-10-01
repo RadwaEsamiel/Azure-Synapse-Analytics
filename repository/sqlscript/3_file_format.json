@@ -1,0 +1,20 @@
+{
+	"name": "3_file_format",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name ='csv_file')\ncreate EXTERNAL FILE FORMAT csv_file\nwith(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS(\n        FIELD_TERMINATOR = ',' ,\n        string_delimiter = '\"' ,\n        FIRST_ROW = 2 ,\n     USE_TYPE_DEFAULT = FALSE ,\n      Encoding = 'UTF8' ,\n     PARSER_VERSION = '2.0'    )\n);\n\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name ='csv_file_pv1')\ncreate EXTERNAL FILE FORMAT csv_file_pv1\nwith(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS(\n        FIELD_TERMINATOR = ',' ,\n        string_delimiter = '\"' ,\n        FIRST_ROW = 2 ,\n     USE_TYPE_DEFAULT = FALSE ,\n      Encoding = 'UTF8' ,\n     PARSER_VERSION = '1.0'    )\n);\n\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name ='Tsv_file_pv1')\ncreate EXTERNAL FILE FORMAT Tsv_file_pv1\nwith(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS(\n        FIELD_TERMINATOR = '\\t' ,\n        string_delimiter = '\"' ,\n        FIRST_ROW = 2 ,\n     USE_TYPE_DEFAULT = FALSE ,\n      Encoding = 'UTF8' ,\n     PARSER_VERSION = '2.0'    )\n);\n\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name ='parquert_file')\ncreate EXTERNAL FILE FORMAT parquert_file\nwith(\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec' \n);\n\n\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name ='Delta_file')\ncreate EXTERNAL FILE FORMAT Delta_file\nwith(\n    FORMAT_TYPE = DELTA,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec' \n);\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

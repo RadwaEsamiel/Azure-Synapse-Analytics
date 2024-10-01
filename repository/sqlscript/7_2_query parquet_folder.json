@@ -1,0 +1,20 @@
+{
+	"name": "7_2_query parquet_folder",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/discovery"
+		},
+		"content": {
+			"query": "USE nyc_taxi_projectDB;\n \n\nselect * from \n    OPENROWSET(\n        bulk 'raw/trip_data_green_parquet/year=*/month=*/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'parquet'\n    )as result_set\n\n\n    ************************************************************************************************************\n\nselect * from \n    OPENROWSET(\n        bulk 'raw/trip_data_green_parquet/**',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'parquet'\n    )as result_set\n\n\n    ************************************************************************************************************\n\n\nselect result_set.filename() as source_filename,\nresult_set.filepath() as source_filepath,\nresult_set.filepath(1) as year,\nresult_set.filepath(2) as month,\n result_set.* from \n    OPENROWSET(\n        bulk 'raw/trip_data_green_parquet/year=*/month=*/*.parquet',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'parquet'\n    )with (\n    store_and_fwd_flag char(1) ,\n    VendorID int,\n    lpep_pickup_datetime datetime2(7),\n    lpep_dropoff_datetime datetime2(7),\n    total_amount FLOAT,\n    payment_type INT,\n    trip_type INT\n        ) \nas result_set\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

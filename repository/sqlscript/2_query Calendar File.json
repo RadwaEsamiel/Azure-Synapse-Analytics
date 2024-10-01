@@ -1,0 +1,20 @@
+{
+	"name": "2_query Calendar File",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/exploring"
+		},
+		"content": {
+			"query": "\nselect * from \n    OPENROWSET (\n        BULK 'raw/calendar.csv',\n        DATA_SOURCE = 'nyc_taxi_data' ,\n        format = 'csv', \n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    )as [result_set]\n\n****************************************************************************************************\n\nEXEC sp_describe_first_result_set N'select * from \n    OPENROWSET (\n        BULK ''raw/calendar.csv'',\n        DATA_SOURCE = ''nyc_taxi_data'' ,\n                format = ''csv'', \n        PARSER_VERSION = ''2.0'',\n        HEADER_ROW = TRUE\n    )as [result_set]\n'\n****************************************************************************************************\nselect MAX(len(date_key)) as date_key_length,\nMAX(len(year_month)) as year_month_length,\n    MAX(len(year_week)) as year_week_length,\nMAX(len(month_name)) as month_name_length,\nMAX(len(day_name)) as day_name_length\n from \n    OPENROWSET (\n        BULK 'raw/calendar.csv',\n        DATA_SOURCE = 'nyc_taxi_data' ,\n                format = 'csv', \n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    )as [result_set]\n\n****************************************************************************************************\nselect * from \n    OPENROWSET (\n        BULK 'raw/calendar.csv',\n        DATA_SOURCE = 'nyc_taxi_data' ,\n        format = 'csv', \n        PARSER_VERSION = '2.0',   \n        FIRSTROW = 2,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n'\n    )\n    with(\n        date_id BIGINT 1 ,\n        Date DATE 2 ,\n        Year SMALLINT 3,\n        Month SMALLINT 4 ,\n        Day SMALLINT 5 ,\n        Day_Name VARCHAR(50) 6,\n        Month_Name VARCHAR(50) 10,\n        Day_of_Year SMALLINT 7,\n        Week_of_Month SMALLINT 8,\n        Week_of_Year SMALLINT 9,\n        year_week BIGINT 12,\n        year_month BIGINT 11\n\n\n    )\n    as [result_set]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

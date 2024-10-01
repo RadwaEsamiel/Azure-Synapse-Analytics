@@ -1,0 +1,27 @@
+[
+    {
+        "Folder_path":"silver_layer/taxi_zone",
+        "procedure_name":"silver.usp_taxi_zones"
+    },
+    {
+        "Folder_path":"silver_layer/calendar",
+        "procedure_name":"silver.usp_calender"
+    },
+    {
+        "Folder_path":"silver_layer/vendor",
+        "procedure_name":"silver.usp_vendor"
+    },
+    {
+        "Folder_path":"silver_layer/trip_type",
+        "procedure_name":"silver.trip_type_USP"
+    },
+    {
+        "Folder_path":"silver_layer/rate_code",
+        "procedure_name":"silver.rate_code_USP"
+    },
+    {
+        "Folder_path":"silver_layer/payment_type",
+        "procedure_name":"silver.payment_type_USP"
+    }
+
+]

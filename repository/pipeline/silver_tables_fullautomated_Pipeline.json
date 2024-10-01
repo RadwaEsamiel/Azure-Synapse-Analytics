@@ -1,0 +1,117 @@
+{
+	"name": "silver_tables_fullautomated_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach folderpath excute procedure",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('folderpath_uspnames')",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Delete folder_path",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "ds_nyc_data_dynamic",
+									"type": "DatasetReference",
+									"parameters": {
+										"foldername": {
+											"value": "@item().Folder_path",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						},
+						{
+							"name": "excute Stored procedure",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Delete folder_path",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": {
+									"value": "@item().procedure_name",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_serverless_sqlpool",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"folderpath_uspnames": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"Folder_path": "silver_layer/taxi_zone",
+						"procedure_name": "silver.usp_taxi_zones"
+					},
+					{
+						"Folder_path": "silver_layer/calendar",
+						"procedure_name": "silver.usp_calender"
+					},
+					{
+						"Folder_path": "silver_layer/vendor",
+						"procedure_name": "silver.usp_vendor"
+					},
+					{
+						"Folder_path": "silver_layer/trip_type",
+						"procedure_name": "silver.trip_type_USP"
+					},
+					{
+						"Folder_path": "silver_layer/rate_code",
+						"procedure_name": "silver.rate_code_USP"
+					},
+					{
+						"Folder_path": "silver_layer/payment_type",
+						"procedure_name": "silver.payment_type_USP"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-09-30T15:51:50Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

@@ -1,0 +1,20 @@
+{
+	"name": "5_2_bronze_views_payment_type",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze views"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\ndrop view if EXISTS bronze.view_payment_type go\ncreate view bronze.view_payment_type\nas \nselect payment_type, payment_type_desc from \n    OPENROWSET(\n        bulk 'raw/payment_type.json',\n         DATA_SOURCE = 'logical_DWH_exDS',\n        format = 'csv',\n        FIELDTERMINATOR = '0x0b',\n        FIELDQUOTE = '0x0b'\n\n    )with(\n        jsondata NVARCHAR(MAX)\n    ) \n    as json_paymenttype_data\n    CROSS APPLY openjson(jsondata) with (payment_type SMALLINT , payment_type_desc VARCHAR(15) ) go\n\nselect * from bronze.view_payment_type go \n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

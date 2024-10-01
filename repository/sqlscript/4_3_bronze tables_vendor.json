@@ -1,0 +1,20 @@
+{
+	"name": "4_3_bronze tables_vendor",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze_tables"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\nif OBJECT_ID('bronze.vendor') is not NULL\n    drop EXTERNAL table bronze.vendor \n\ncreate EXTERNAL TABLE bronze.vendor \n    (\n        vendor_id       TINYINT,\n        vendor_name     VARCHAR(50)\n        )\n        with(\n            location = 'raw/vendor.csv',\n            data_source = logical_DWH_exDS,\n            file_format =csv_file_pv1,\n            reject_value = 10,\n            rejected_row_location = 'rejections/vendor'\n            );\n\nSELECT TOP 100 * FROM bronze.vendor ;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

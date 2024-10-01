@@ -1,0 +1,20 @@
+{
+	"name": "5_3_json multi line",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/discovery"
+		},
+		"content": {
+			"query": "USE nyc_taxi_projectDB;\n\n\n\n\nselect rate_code_id,rate_code\n    from OPENROWSET(\n        BULK 'raw/rate_code_multi_line.json',\n        DATA_SOURCE =  'nyc_taxi_data',\n        FORMAT = 'csv',\n        FIELDQUOTE = '0x0b',\n        FIELDTERMINATOR = '0x0b',\n        ROWTERMINATOR = '0x0b' \n    )with(\n        jsonmultiline NVARCHAR(MAX)\n    )\n    as result_json\n    CROSS APPLY openjson(jsonmultiline) with(\n        rate_code_id SMALLINT,\n        rate_code VARCHAR(50)\n    );",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

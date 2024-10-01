@@ -1,0 +1,20 @@
+{
+	"name": "1_1_silver tables_taxi zones",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\nif OBJECT_id('silver.taxi_zones') is not NULL\n    drop EXTERNAL TABLE silver.taxi_zones go \n\ncreate EXTERNAL TABLE silver.taxi_zones \n    with(\n        LOCATION = 'silver_layer/taxi_zone',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file\n    )AS\nSELECT * from bronze.taxi_zones go \n\n\nSELECT * from silver.taxi_zones go ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

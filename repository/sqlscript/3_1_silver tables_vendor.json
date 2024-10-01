@@ -1,0 +1,20 @@
+{
+	"name": "3_1_silver tables_vendor",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\nif OBJECT_id('silver.vendor') is not NULL\n    drop EXTERNAL TABLE silver.vendor go \n\ncreate EXTERNAL TABLE silver.vendor \n    with(\n        LOCATION = 'silver_layer/vendor',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file \n    )\n    as select * from bronze.vendor go \n\nselect * from silver.vendor go",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

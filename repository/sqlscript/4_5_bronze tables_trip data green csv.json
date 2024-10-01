@@ -1,0 +1,20 @@
+{
+	"name": "4_5_bronze tables_trip data green csv",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze_tables"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\nif OBJECT_ID('bronze.trip_data_csv') is not NULL\n    drop EXTERNAL table bronze.trip_data_csv go\n\ncreate EXTERNAL TABLE bronze.trip_data_csv \n    (\n        VendorID INT,\n        lpep_pickup_datetime datetime2(7),\n        lpep_dropoff_datetime datetime2(7),\n        store_and_fwd_flag CHAR(1),\n        RatecodeID INT,\n        PULocationID INT,\n        DOLocationID INT,\n        passenger_count INT,\n        trip_distance FLOAT,\n        fare_amount FLOAT,\n        extra FLOAT,\n        mta_tax FLOAT,\n        tip_amount FLOAT,\n        tolls_amount FLOAT,\n        ehail_fee INT,\n        improvement_surcharge FLOAT,\n        total_amount FLOAT,\n        payment_type INT,\n        trip_type INT,\n        congestion_surcharge FLOAT\n\n        )\n        with(\n            location = 'raw/trip_data_green_csv/**',\n            data_source = logical_DWH_exDS,\n            file_format =csv_file_pv1,\n            reject_value = 10,\n            rejected_row_location = 'rejections/taxi_zone'\n            ) go\n\nSELECT TOP 100 * FROM bronze.trip_data_csv go\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

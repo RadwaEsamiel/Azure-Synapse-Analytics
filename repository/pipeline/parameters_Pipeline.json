@@ -1,0 +1,82 @@
+{
+	"name": "parameters_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Delete_existent_file",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 3000,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_nyc_data_dynamic",
+						"type": "DatasetReference",
+						"parameters": {
+							"foldername": {
+								"value": "@pipeline().parameters.Folder_path",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "create_taxizone_usp",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Delete_existent_file",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": {
+						"value": "@pipeline().parameters.procedure_name",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_serverless_sqlpool",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"Folder_path": {
+				"type": "string"
+			},
+			"procedure_name": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "testing"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-09-30T15:51:42Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

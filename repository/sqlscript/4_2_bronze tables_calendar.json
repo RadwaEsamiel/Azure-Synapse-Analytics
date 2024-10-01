@@ -1,0 +1,20 @@
+{
+	"name": "4_2_bronze tables_calendar",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze_tables"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\nif OBJECT_ID('bronze.calendar') is not NULL\n    drop EXTERNAL table bronze.calendar \n\ncreate EXTERNAL TABLE bronze.calendar (\n\n        date_key        INT,\n        date            DATE,\n        year            SMALLINT,\n        month           TINYINT,\n        day             TINYINT,\n        day_name        VARCHAR(10),\n        day_of_year     SMALLINT,\n        week_of_month   TINYINT,\n        week_of_year    TINYINT,\n        month_name      VARCHAR(10),\n        year_month      INT,\n        year_week       INT\n) \n    with(\n        location = 'raw/calendar.csv',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = csv_file_pv1,\n        reject_value = 10 ,\n        REJECTED_ROW_LOCATION = 'rejections/calendar'\n\n\n    ) GO\n\nselect * from bronze.calendar go ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

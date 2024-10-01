@@ -1,0 +1,20 @@
+{
+	"name": "2_3_final_stored_procedure",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/3_Gold_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi;\nGO\n\nCREATE OR ALTER PROCEDURE gold.final_reporting_table_proc\n    @year VARCHAR(5),\n    @month VARCHAR(3)\n\nAS\nBEGIN\n    DECLARE @create_statement NVARCHAR(MAX),\n            @drop_statement NVARCHAR(MAX);\n\n    -- Drop statement to remove existing reporting table if it exists\n    SET @drop_statement = \n        'IF OBJECT_ID(''gold.final_reporting_table' + @year + '_' + @month + ''') IS NOT NULL ' +\n        'DROP EXTERNAL TABLE gold.final_reporting_table' + @year + '_' + @month + ';';\n\n    PRINT(@drop_statement);\n    EXEC sp_executesql @drop_statement;\n\n    -- Create statement for the new reporting table\n    SET @create_statement = \n        'CREATE EXTERNAL TABLE gold.final_reporting_table' + @year + '_' + @month + ' ' +\n        'WITH ( ' +\n        '    LOCATION = ''gold_layer/final_reporting_data/year=' + @year + '/month=' + @month + ''', ' +\n        '    DATA_SOURCE = logical_DWH_exDS, ' +\n        '    FILE_FORMAT = parquert_file ' +\n        ') AS ' +\n        'SELECT ' +\n        '    vtrip.year, vtrip.month, ' +\n        '    CONVERT(DATE, vtrip.lpep_pickup_datetime) AS trip_date, ' +\n        '    tz.Borough, ' +\n        '    cl.day_name AS trip_day, ' +\n        '    CASE WHEN cl.day_name IN (''Saturday'', ''Sunday'') THEN ''Y'' ELSE ''N'' END AS weekend_ind, ' +\n                '    SUM(CASE WHEN pt.payment_type_desc = ''Credit card'' THEN 1 ELSE 0 END) AS card_trips_count, ' +\n        '    SUM(CASE WHEN pt.payment_type_desc = ''Cash'' THEN 1 ELSE 0 END) AS cash_trips_count, ' +\n        '  sum(case when tt.trip_type_desc = ''Dispatch'' then 1 else 0 end) as count_Dispatch_trips,' +\n        '   sum(case when tt.trip_type_desc = ''Street-hail'' then 1 else 0 end) as count_Street_hail_trips,'+\n        '   sum(vtrip.trip_distance) as total_trip_distance,'+\n        '    sum(vtrip.fare_amount) as total_fare_amount,'+\n        '   sum(DATEDIFF(minute, vtrip.lpep_pickup_datetime,vtrip.lpep_dropoff_datetime )) as total_duration'+\n        ' FROM ' +\n        '    silver.view_partitioning_trip_data vtrip ' +\n        '    JOIN silver.taxi_zones tz ON vtrip.PULocationID = tz.LocationID ' +\n        '    JOIN silver.calendar cl ON CONVERT(DATE, vtrip.lpep_pickup_datetime) = cl.date ' +\n                '    JOIN silver.payment_type pt ON vtrip.payment_type = pt.payment_type ' +\n        '     join silver.trip_type tt on vtrip.trip_type = tt.trip_type ' +\n        'WHERE vtrip.year = ''' + @year + ''' AND vtrip.month = ''' + @month + ''' ' +\n        'GROUP BY ' +\n        '    vtrip.year, vtrip.month, ' +\n        '    CONVERT(DATE, vtrip.lpep_pickup_datetime), ' +\n        '    tz.Borough, ' +\n        '    cl.day_name;';\n\n    PRINT(@create_statement);\n    EXEC sp_executesql @create_statement;\n\nEND;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

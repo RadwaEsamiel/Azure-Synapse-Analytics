@@ -1,0 +1,20 @@
+{
+	"name": "4_1_bronze tables_taxi zones",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze_tables"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\nif OBJECT_ID('bronze.taxi_zones') is not NULL\n    drop EXTERNAL table bronze.taxi_zones go\n\ncreate EXTERNAL TABLE bronze.taxi_zones \n    (\n        LocationID SMALLINT,\n        Borough VARCHAR(15),\n        Zone VARCHAR(50),\n        service_zone VARCHAR(15)\n        )\n        with(\n            location = 'raw/taxi_zone.csv',\n            data_source = logical_DWH_exDS,\n            file_format =csv_file_pv1,\n            reject_value = 10,\n            rejected_row_location = 'rejections/taxi_zone'\n            ) go\n\nSELECT TOP 100 * FROM bronze.taxi_zones go\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

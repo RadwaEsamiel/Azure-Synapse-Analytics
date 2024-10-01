@@ -1,0 +1,20 @@
+{
+	"name": "2_1_silver tables_calendar",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\n\nif object_id('silver.calendar')is not null \n    drop EXTERNAL table silver.calendar go \n    \ncreate EXTERNAL TABLE silver.calendar \n    with(\n        LOCATION = 'silver_layer/calendar',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file\n    )as \n    select * from bronze.calendar go \n\nselect * from silver.calendar go",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

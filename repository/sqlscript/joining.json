@@ -1,0 +1,20 @@
+{
+	"name": "joining",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Data quality"
+		},
+		"content": {
+			"query": "USE nyc_taxi_projectDB;\n\n\nselect zones_data.Borough, count(*) total_number_trips\n    from OPENROWSET(\n        BULK 'raw/trip_data_green_delta/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'Delta'\n\n    )as trips_data\n\njoin \n\nOPENROWSET(\n        BULK 'raw/taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data',\n         FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n'\n    ) as zones_data\n\non trips_data.PULocationID =  zones_data.LocationID\ngroup by zones_data.Borough \norder by count(*) desc ;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

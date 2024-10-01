@@ -1,0 +1,20 @@
+{
+	"name": "7_1_query_Parquet",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/discovery"
+		},
+		"content": {
+			"query": "\nUSE nyc_taxi_projectDB;\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'raw/trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\n************************************************************************************************************\n\nEXEC sp_describe_first_result_set N'\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK ''raw/trip_data_green_parquet/year=2020/month=01/'',\n        DATA_SOURCE = ''nyc_taxi_data'',\n        FORMAT = ''PARQUET''\n    ) AS [result] '\n\n    ************************************************************************************************************\n\n\n    SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'raw/trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'PARQUET'\n    ) with (store_and_fwd_flag char(1) ,\n    VendorID int,\n    lpep_pickup_datetime datetime2(7),\nlpep_dropoff_datetime datetime2(7)) \n\n    AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

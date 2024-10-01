@@ -1,0 +1,169 @@
+{
+	"name": "gold_layer Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "select year and month Script",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_serverless_sqlpool",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "USE logical_DWH_nyc_taxi;\n select DISTINCT year, month from silver.view_partitioning_trip_data;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "ForEach row in the select scrip delete and create",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "select year and month Script",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('select year and month Script').output.resultsets[0].rows",
+						"type": "Expression"
+					},
+					"batchCount": 5,
+					"activities": [
+						{
+							"name": "Delete folder path",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "ds_nyc_data_dynamic",
+									"type": "DatasetReference",
+									"parameters": {
+										"foldername": {
+											"value": "gold_layer/final_reporting_data/year=@{item().year}/month=@{item().month}",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						},
+						{
+							"name": "excute Stored procedure",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Delete folder path",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[gold].[final_reporting_table_proc]",
+								"storedProcedureParameters": {
+									"month": {
+										"value": {
+											"value": "@item().month",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"year": {
+										"value": {
+											"value": "@item().year",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_serverless_sqlpool",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Script to create reporting view",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "ForEach row in the select scrip delete and create",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_serverless_sqlpool",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": "USE logical_DWH_nyc_taxi  ;\r\n\r\ndrop VIEW if EXISTS gold.reporting_view  ;\r\n"
+						},
+						{
+							"type": "NonQuery",
+							"text": "\ncreate view gold.reporting_view as \n\nSELECT [year]\n,[month]\n,[trip_date]\n,[Borough]\n,[trip_day]\n,[weekend_ind]\n,[card_trips_count]\n,[cash_trips_count]\n,[count_Dispatch_trips]\n,[count_Street_hail_trips]\n,[total_trip_distance]\n,[total_fare_amount]\n,[total_duration]\n\n FROM OPENROWSET (\n    BULK 'gold_layer/final_reporting_data/**',\n    DATA_SOURCE = 'logical_DWH_exDS',\n    FORMAT = 'parquet' \n ) with (\n   [year] VARCHAR(5)\n,[month] VARCHAR(3)\n,[trip_date] DATE\n,[Borough] VARCHAR(15)\n,[trip_day] VARCHAR(15)\n,[weekend_ind] CHAR(1)\n,[card_trips_count] INT\n,[cash_trips_count] INT\n,[count_Dispatch_trips] INT\n,[count_Street_hail_trips] INT\n,[total_trip_distance] FLOAT\n,[total_fare_amount] FLOAT\n,[total_duration] INT\n )\n \n as reult_set "
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-09-30T15:51:35Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

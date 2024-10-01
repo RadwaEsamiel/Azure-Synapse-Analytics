@@ -1,0 +1,20 @@
+{
+	"name": "6_silver tables_payment type",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/2_Silver_layer"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi go\n\nif OBJECT_id('silver.payment_type') is not null \n    drop EXTERNAL table silver.payment_type go\n\n\nCREATE EXTERNAL TABLE silver.payment_type \n    with(\n        LOCATION = 'silver_layer/payment_type',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file\n    )as select * from bronze.view_payment_type go \n\nselect * from silver.payment_type go",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

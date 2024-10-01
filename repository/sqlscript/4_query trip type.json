@@ -1,0 +1,20 @@
+{
+	"name": "4_query trip type",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/discovery"
+		},
+		"content": {
+			"query": "\nselect * from \n    OPENROWSET(\n        BULK 'raw/trip_type.tsv',\n        DATA_SOURCE = 'nyc_taxi_data',\n        FORMAT = 'csv',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = '\\t' \n\n    )as trip_result",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

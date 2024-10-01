@@ -1,0 +1,20 @@
+{
+	"name": "3_3_execute_final",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/3_Gold_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi;\n\nEXEC gold.final_reporting_table_proc '2020' , '01' \n\nEXEC gold.final_reporting_table_proc '2020', '02'\nEXEC gold.final_reporting_table_proc '2020', '03'\nEXEC gold.final_reporting_table_proc '2020', '04'\nEXEC gold.final_reporting_table_proc '2020', '05'\nEXEC gold.final_reporting_table_proc '2020', '06'\nEXEC gold.final_reporting_table_proc '2020', '07'\nEXEC gold.final_reporting_table_proc '2020', '08'\nEXEC gold.final_reporting_table_proc '2020', '09'\nEXEC gold.final_reporting_table_proc '2020', '10'\nEXEC gold.final_reporting_table_proc '2020', '11'\nEXEC gold.final_reporting_table_proc '2020', '12'\nEXEC gold.final_reporting_table_proc '2021', '01'\nEXEC gold.final_reporting_table_proc '2021', '02'\nEXEC gold.final_reporting_table_proc '2021', '03'\nEXEC gold.final_reporting_table_proc '2021', '04'\nEXEC gold.final_reporting_table_proc '2021', '05'\nEXEC gold.final_reporting_table_proc '2021', '06' ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

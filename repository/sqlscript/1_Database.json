@@ -1,0 +1,20 @@
+{
+	"name": "1_Database",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer"
+		},
+		"content": {
+			"query": "use master\ngo \n\ncreate DATABASE logical_DWH_nyc_taxi\ngo\n\nalter DATABASE logical_DWH_nyc_taxi COLLATE Latin1_General_100_BIN2_UTF8\ngo \n\nuse logical_DWH_nyc_taxi go \n\ncreate SCHEMA bronze go \ncreate SCHEMA silver go \ncreate SCHEMA gold go \n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

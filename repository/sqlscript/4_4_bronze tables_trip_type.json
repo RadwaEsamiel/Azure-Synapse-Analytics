@@ -1,0 +1,20 @@
+{
+	"name": "4_4_bronze tables_trip_type",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze_tables"
+		},
+		"content": {
+			"query": "use logical_DWH_nyc_taxi ;\n\nif OBJECT_ID('bronze.trip_type') is not NULL\n    drop EXTERNAL table bronze.trip_type go\n\ncreate EXTERNAL TABLE bronze.trip_type \n    (\n        trip_type       TINYINT,\n        trip_type_desc  VARCHAR(50)\n        )\n        with(\n            location = 'raw/trip_type.tsv',\n            data_source = logical_DWH_exDS,\n            file_format =Tsv_file_pv1\n            );\n\nSELECT TOP 100 * FROM bronze.trip_type go\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

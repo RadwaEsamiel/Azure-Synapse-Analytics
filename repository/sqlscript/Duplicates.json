@@ -1,0 +1,20 @@
+{
+	"name": "Duplicates",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Data quality"
+		},
+		"content": {
+			"query": "USE nyc_taxi_projectDB;\n\n   \n\nSELECT\n     LocationID, count(*) as counteachid\nFROM\n    OPENROWSET(\n        BULK 'raw/taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data',\n         FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n'\n    ) as result_set\ngroup by LocationID\nhaving count(*) > 1;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_projectDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

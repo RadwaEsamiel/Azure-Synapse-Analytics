@@ -1,0 +1,75 @@
+{
+	"name": "silver_taxi_zone_script_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Delete_existent_file",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 3000,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_silverlayer_taxizone",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "create_taxizone_Script",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Delete_existent_file",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_serverless_sqlpool",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": "if OBJECT_id('silver.taxi_zones') is not NULL\n    drop EXTERNAL TABLE silver.taxi_zones"
+						},
+						{
+							"type": "NonQuery",
+							"text": "create EXTERNAL TABLE silver.taxi_zones \n    with(\n        LOCATION = 'silver_layer/taxi_zone',\n        DATA_SOURCE = logical_DWH_exDS,\n        FILE_FORMAT = parquert_file\n    )AS\nSELECT * from bronze.taxi_zones go \n"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"folder": {
+			"name": "testing"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-09-30T15:51:57Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

@@ -1,0 +1,31 @@
+{
+	"name": "folderpath_uspnames",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_synapse_storagelake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "folderpath_procedurenames.json",
+				"folderPath": "silver_layer/folderpath_procedurenames",
+				"fileSystem": "nyc-taxi-data"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"Folder_path": {
+					"type": "string"
+				},
+				"procedure_name": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

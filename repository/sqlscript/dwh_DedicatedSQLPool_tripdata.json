@@ -1,0 +1,20 @@
+{
+	"name": "dwh_DedicatedSQLPool_tripdata",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/nyctaxi_Datawarehouse"
+		},
+		"content": {
+			"query": "create SCHEMA dwh_schema go \n\nCREATE TABLE dwh_schema.trip_data_repoting\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n)as \nselect * from staging.etx_trip_data_agg\nGO\n\n\nselect * from dwh_schema.trip_data_repoting;\n\n\nCREATE TABLE dwh_schema.trip_data_analysis\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n)as \nselect * from staging.tripdata\nGO\n\nselect * from dwh_schema.trip_data_analysis;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_DWH",
+				"poolName": "nyc_taxi_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

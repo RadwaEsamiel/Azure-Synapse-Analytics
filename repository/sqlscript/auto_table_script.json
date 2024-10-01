@@ -1,0 +1,20 @@
+{
+	"name": "auto_table_script",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/1_Bronze_layer/Bronze_tables"
+		},
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseDelimitedTextFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseDelimitedTextFormat] \n\tWITH ( FORMAT_TYPE = DELIMITEDTEXT ,\n\t       FORMAT_OPTIONS (\n\t\t\t FIELD_TERMINATOR = ',',\n\t\t\t STRING_DELIMITER = '\"',\n\t\t\t FIRST_ROW = 2,\n\t\t\t USE_TYPE_DEFAULT = FALSE\n\t\t\t))\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'nyc-taxi-data_dlsrsynapsecourse_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [nyc-taxi-data_dlsrsynapsecourse_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://nyc-taxi-data@dlsrsynapsecourse.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE bronze.calender (\n\t[C1] nvarchar(4000),\n\t[C2] nvarchar(4000),\n\t[C3] nvarchar(4000),\n\t[C4] nvarchar(4000),\n\t[C5] nvarchar(4000),\n\t[C6] nvarchar(4000),\n\t[C7] nvarchar(4000),\n\t[C8] nvarchar(4000),\n\t[C9] nvarchar(4000),\n\t[C10] nvarchar(4000),\n\t[C11] nvarchar(4000),\n\t[C12] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'raw/calendar.csv',\n\tDATA_SOURCE = [nyc-taxi-data_dlsrsynapsecourse_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseDelimitedTextFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM bronze.calender\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

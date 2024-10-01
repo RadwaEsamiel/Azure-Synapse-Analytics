@@ -1,0 +1,20 @@
+{
+	"name": "spark_link_cosmosDB",
+	"properties": {
+		"folder": {
+			"name": "Spark link"
+		},
+		"content": {
+			"query": "IF (NOT EXISTS(SELECT * FROM sys.credentials WHERE name = 'synapsecosmosdb'))\n    CREATE CREDENTIAL [synapsecosmosdb]\n    WITH IDENTITY = 'SHARED ACCESS SIGNATURE', SECRET = 'eigwZtMBfnQ8VEzp8WgAbrO2Afz0zk91oQIVvSm2TruRwhDjVkx3Q7xaVRL1Qf3z5y9lDcHqqu0LACDbNp0o8A=='go\n\nSELECT TOP 100 *\nFROM OPENROWSET(​PROVIDER = 'CosmosDB',\n                CONNECTION = 'Account=synapsecosmosdb;Database=nyctaxidata',\n                OBJECT = 'heartbeat',\n                SERVER_CREDENTIAL = 'synapsecosmosdb'\n) AS [heartbeat]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

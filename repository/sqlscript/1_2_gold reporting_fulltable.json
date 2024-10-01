@@ -1,0 +1,20 @@
+{
+	"name": "1_2_gold reporting_fulltable",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi_data/Logical_DataWarehouse/3_Gold_layer"
+		},
+		"content": {
+			"query": "USE logical_DWH_nyc_taxi go \n\nselect top(100)\n    vtrip.year, vtrip.month, \n    convert(date,vtrip.lpep_pickup_datetime) as trip_date,\n    tz.Borough,\n    cl.day_name as trip_day,\n    (case when cl.day_name in ('Saturday', 'Sunday') then 'Y' else 'N' end ) as weekend_ind,\n    sum(case when tt.trip_type_desc = 'Dispatch' then 1 else 0 end) as count_Dispatch_trips,\n    sum(case when tt.trip_type_desc = 'Street-hail' then 1 else 0 end) as count_Street_hail_trips,\n    sum(vtrip.trip_distance) as total_trip_distance,\n    sum(vtrip.fare_amount) as total_fare_amount,\n    sum(DATEDIFF(minute, vtrip.lpep_pickup_datetime,vtrip.lpep_dropoff_datetime )) as total_duration\n\n from \n    silver.view_partitioning_trip_data vtrip \n    join silver.taxi_zones tz on vtrip.PULocationID = tz.LocationID \n    join silver.calendar cl on convert(date,vtrip.lpep_pickup_datetime) = cl.date\n    join silver.trip_type tt on vtrip.trip_type = tt.trip_type\n    \nwhere vtrip.year = '2021' and  vtrip.month = '07' \n\ngroup by  \n    vtrip.year, vtrip.month, \n    convert(date,vtrip.lpep_pickup_datetime),\n    tz.Borough,\n    cl.day_name    \n    go ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "logical_DWH_nyc_taxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
